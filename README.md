@@ -712,6 +712,7 @@ Standard Rekognition detects generic objects (e.g., "Car", "Flower"). **Custom L
 ## Part B – Case Studies
 
 ### Case Study 1: Smart Campus Security System
+**Scenario:** A university wants to upgrade its security system using AI-powered facial recognition to monitor entry points, detect unauthorized visitors, and ensure student safety.
 
 **1. Describe how AWS Rekognition can be used to design this smart security system.**
 *   Rekognition can automate entry management. By using **Face Comparison**, the system can match faces at the turnstile against a database of registered student IDs stored in a "Rekognition Collection".
@@ -734,11 +735,12 @@ Standard Rekognition detects generic objects (e.g., "Car", "Flower"). **Custom L
 *   Train a **Custom Labels** model specifically on dataset images of "Unattended Bags" or "Motorcycle Helmets". This allows the security cameras to flag these specific security risks which generic models might miss.
 
 ### Case Study 2: Retail Analytics & Customer Emotion Tracking
+**Scenario:** A retail chain wants to understand customer behavior inside stores. Cameras capture real-time footage, and the company wants to analyze customer count, gender distribution, and emotions at checkout counters.
 
 **1. How can AWS Rekognition’s facial analysis and emotion detection capabilities help in this scenario?**
 *   It can analyze video feeds to determine the demographic mix (Age, Gender) of shoppers and their sentiment (Happy, Confused, Sad) at specific product aisles or checkout lines.
 
-**2. Design a data flow using S3, Lambda, and CloudWatch.**
+**2. Design a data flow using S3 (video storage), Lambda (trigger), and CloudWatch (monitoring).**
 *   **S3:** Ingest video chunks.
 *   **Lambda:** Triggered to call Rekognition Video analysis.
 *   **CloudWatch:** Lambda sends the aggregated metrics (e.g., "CustomerCount: 50", "AvgEmotion: Happy") to CloudWatch Metrics for dashboarding.
@@ -755,6 +757,7 @@ Standard Rekognition detects generic objects (e.g., "Car", "Flower"). **Custom L
 *   **Notice:** Stores must display clear signage informing customers that video analytics are in use.
 
 ### Case Study 3: Healthcare Patient Monitoring System
+**Scenario:** A hospital wants to implement a system that automatically detects patient activity in hospital rooms (e.g., patient lying, sitting, or falling) and alerts nurses in emergencies.
 
 **1. Explain how object and activity detection in AWS Rekognition Video can automate this process.**
 *   Rekognition Video can detect activities and poses. By analyzing the geometry of the person, it can distinguish between "Sitting", "Standing", and "Lying Down" (potential fall).
@@ -762,7 +765,7 @@ Standard Rekognition detects generic objects (e.g., "Car", "Flower"). **Custom L
 **2. Outline how SNS and Lambda can trigger real-time alerts to medical staff.**
 *   If Rekognition detects a "Fall" confidence score > 90%, Lambda publishes a message to an **Amazon SNS** topic. SNS then sends an SMS or Pager notification to the nursing station instantly.
 
-**3. Which Rekognition features can help recognize domain-specific actions like “patient fall”?**
+**3. Which Rekognition features (e.g., Custom Labels) can help recognize domain-specific actions like “patient fall”?**
 *   **Custom Labels:** While generic models detect people, Custom Labels can be trained specifically on images of "Patient Falling" vs "Patient Sleeping" to reduce false positives.
 
 **4. How can you maintain HIPAA compliance when handling video footage?**
@@ -774,25 +777,27 @@ Standard Rekognition detects generic objects (e.g., "Car", "Flower"). **Custom L
 *   Analyze long-term data to find patterns: e.g., "Falls happen most often between 2 AM and 4 AM". This allows the hospital to increase staffing during those specific high-risk windows.
 
 ### Case Study 4: Media and Entertainment – Automated Video Tagging
+**Scenario:** A media production company wants to automatically tag scenes in videos for faster searching and editing — e.g., identifying “beach scenes,” “sports activities,” and “specific celebrities.”
 
 **1. Which Rekognition APIs and features would you use for automatic tagging and celebrity identification?**
 *   `StartLabelDetection`: For tagging scenes (Beach, Car chase).
 *   `StartCelebrityRecognition`: To identify famous actors in the footage.
 
-**2. Create a workflow combining S3, Rekognition Video, and DynamoDB.**
+**2. Create a workflow combining S3 (storage), Rekognition Video (analysis), and DynamoDB (metadata storage).**
 *   Upload raw footage to **S3** -> Trigger **Lambda** to start Rekognition Job -> Rekognition writes results to an SNS topic -> Another Lambda parses results and writes tags with timestamps to **DynamoDB**.
 
 **3. How can Custom Labels improve tagging for specific genres (e.g., sports, nature)?**
 *   Generic models might just see "Sport". Custom Labels can be trained to identify specific moves like "Touchdown" (Football) or "Slam Dunk" (Basketball) for automated highlight generation.
 
-**4. Discuss how JSON output from Rekognition can be integrated into an editing tool.**
+**4. Discuss how JSON output from Rekognition can be integrated into an editing tool or media database.**
 *   The JSON contains timestamps for every label. A script can convert this into an XML or EDL (Edit Decision List) file importable by Adobe Premiere, placing markers on the timeline where specific celebrities appear.
 
 **5. What challenges might arise when processing large video datasets, and how can AWS handle scalability?**
 *   **Challenge:** Processing hours of 4K video is computationally heavy.
 *   **Scalability:** Rekognition is fully managed. You don't need to provision servers; AWS automatically allocates resources to process jobs in parallel, handling widely varying loads without bottlenecks.
 
-### Case Study 5: Financial Services – KYC Verification
+### Case Study 5: Financial Services – KYC (Know Your Customer) Verification
+**Scenario:** A bank needs to verify customer identity during remote onboarding by comparing the uploaded photo with the ID card image provided by the user.
 
 **1. Explain how AWS Rekognition’s compare_faces() API can be used for KYC automation.**
 *   The API takes two images: the Selfie captured live and the ID card photo. It returns a **Similarity Score**. If the score is above a threshold (e.g., 95%), the identity is verified.
@@ -800,14 +805,14 @@ Standard Rekognition detects generic objects (e.g., "Car", "Flower"). **Custom L
 **2. Describe how Lambda functions and DynamoDB can store and verify identity results securely.**
 *   Lambda receives the API response. It stores the *result* (Verified/Failed) and the *confidence score* in DynamoDB. To protect privacy, it should *not* store the raw biometric vectors, just the verification status and a reference to the secure S3 image location.
 
-**3. How can detect_text() be used to extract ID details?**
+**3. How can detect_text() be used to extract ID details (like name, DOB, and ID number)?**
 *   `DetectText` performs OCR on the ID card image to extract lines of text. Regex patterns can then parse out the Name, Date of Birth, and ID Number to auto-fill the form for the user.
 
 **4. Discuss how Rekognition ensures data security through encryption and IAM policies.**
 *   **Transit:** All API calls are secured via SSL/HTTPS.
 *   **At Rest:** Rekognition does not persist images permanently for processing; it processes and discards (unless using Collections). Stored metadata is encrypted via AWS KMS.
 
-**5. Identify potential limitations of using Rekognition for KYC verification.**
+**5. Identify potential limitations of using Rekognition for KYC verification (e.g., image quality, lighting, privacy).**
 *   **Image Quality:** Blurry ID photos or glare can cause false negatives.
 *   **Lighting:** Poor lighting on the selfie can reduce confidence scores.
 *   **Bias:** Facial recognition algorithms must be constantly monitored to ensure they perform equally well across all demographics and skin tones.
