@@ -868,3 +868,4 @@ Amazon Lambda acts as the "glue" or the "event handler." It executes light-weigh
 1.  **IAM (Least Privilege):** Ensure your Lambda functions have strictly scoped IAM Roles. A function that analyzes images should have permission only for `rekognition:DetectLabels` and `s3:GetObject`, not `s3:DeleteObject`.
 2.  **API Throttling (API Gateway):** Set usage plans and throttling limits on your API Gateway. This prevents attackers from flooding your expensive AI APIs with millions of junk requests (DDoS protection and Cost control).
 3.  **AWS KMS (Encryption):** Use Key Management Service to manage keys for encrypting sensitive data passed through the workflow (in S3 or environment variables), ensuring data is unreadable if intercepted.
+ 
