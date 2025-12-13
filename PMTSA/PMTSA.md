@@ -21,3 +21,20 @@
 *   **Data Leakage**: The model indirectly learns from future values.
 *   **Violates Assumption**: It violates the core time series assumption that future data must not influence the past.
 *   **Over-optimistic**: Leads to over-optimistic accuracy, which fails in real-world forecasting.
+
+## 2. What is normalization? Describe Min–Max Normalization with an example.
+
+**Normalization**
+*   **Definition**: A data preprocessing technique used to scale numerical features to a common range.
+*   **Purpose**: Ensures that features with large values do not dominate features with smaller values.
+*   **Importance**: Critical for distance-based algorithms like KNN, K-means, and gradient descent–based models.
+*   **Benefit**: Helps improve training stability and model performance.
+
+**Min–Max Normalization**
+*   **Definition**: Rescales data to a fixed range, usually [0, 1].
+*   **Formula**: $X_{norm} = \frac{X - X_{min}}{X_{max} - X_{min}}$
+*   **Example**:
+    *   Given values: 10, 20, 30 ($X_{min} = 10, X_{max} = 30$)
+    *   **For 10**: $\frac{10 - 10}{30 - 10} = 0$
+    *   **For 20**: $\frac{20 - 10}{30 - 10} = 0.5$
+    *   **For 30**: $\frac{30 - 10}{30 - 10} = 1$
