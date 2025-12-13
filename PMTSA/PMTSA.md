@@ -146,3 +146,37 @@
 *   **Speed**: Supports parallel processing for faster training.
 *   **Robustness**: Handles missing values automatically.
 *   **Efficiency**: Includes early stopping for better generalization and is scalable for large datasets.
+
+## 10. A dataset exhibits complex seasonality, trend shifts, and noise. Propose a complete forecasting solution mixing decomposition, ML, and statistical models, and justify each step.
+
+**Step 1: Data Preprocessing**
+*   **Action**: Handle missing values, normalize if needed, and split data using rolling validation.
+*   **Justification**: Ensures clean input and prevents data leakage, critical for time series.
+
+**Step 2: Time Series Decomposition**
+*   **Action**: Use **STL or EMD** to separate Trend, Seasonality, and Residuals (Noise).
+*   **Justification**: Simplifies the problem by separating structured patterns from random noise.
+
+**Step 3: Statistical Modeling**
+*   **Action**: Apply **SARIMA or ETS** to model the Trend and Seasonality components.
+*   **Justification**: Statistical models excel at capturing linear and periodic structures interpretably.
+
+**Step 4: Machine Learning on Residuals**
+*   **Action**: Train **XGBoost or Random Forest** on the Residuals using lag features and rolling stats.
+*   **Justification**: ML captures non-linear relationships and complex interactions that statistical models miss.
+
+**Step 5: Hybrid Combination & Evaluation**
+*   **Action**: Add Statistical Forecast + ML Residual Forecast. Evaluate using RMSE/MAE via walk-forward validation.
+*   **Justification**: Combines strengths of both approaches for robust accuracy under shifting conditions.
+
+## 11. What is a Random Forest? How does it reduce overfitting?
+
+**Random Forest**
+*   **Definition**: Random Forest is an ensemble algorithm that builds many decision trees on random samples and features, then combines their outputs to reduce overfitting and improve accuracy. 
+*   **Process**: Builds multiple decision trees on different bootstrapped samples of the data.
+*   **Prediction**: The final output is the majority vote (classification) or average (regression) of all trees.
+
+**How It Reduces Overfitting**
+*   **Bagging**: Each tree sees a different random subset of data.
+*   **Feature Randomness**: At each split, only a random subset of features is considered, reducing correlation between trees.
+*   **Averaging**: Aggregating many diverse trees smooths out individual errors and noise, preventing any single tree from dominating.
