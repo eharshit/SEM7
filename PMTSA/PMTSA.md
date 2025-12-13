@@ -180,3 +180,94 @@
 *   **Bagging**: Each tree sees a different random subset of data.
 *   **Feature Randomness**: At each split, only a random subset of features is considered, reducing correlation between trees.
 *   **Averaging**: Aggregating many diverse trees smooths out individual errors and noise, preventing any single tree from dominating.
+
+## 12. Discuss the steps involved in SARIMA model construction and when it is preferred.
+
+**Steps to Build SARIMA**
+*   **Stationarity**: Check using plots and ADF test; apply differencing ($d$).
+*   **Identification**: Identify non-seasonal parameters ($p, d, q$) and seasonal parameters ($P, D, Q$) using ACF/PACF plots.
+*   **Fitting**: Fit the SARIMA $(p,d,q)(P,D,Q)_m$ model on training data.
+*   **Diagnostics**: Check residuals for white-noise behavior.
+*   **Validation**: Validate using rolling forecast and select best model via AIC/BIC.
+
+**When SARIMA Is Preferred**
+*   Data shows **clear seasonality** with a fixed period.
+*   Relationship is mostly **linear**.
+*   Strong need for **interpretability**.
+*   Works well for short to medium-term forecasts.
+
+## 13. Explain Gini Index and Information Gain used for attribute selection in decision trees.
+
+**Gini Index**
+*   **Concept**: Measures how often a randomly chosen sample would be misclassified. (Lower is purer).
+*   **Usage**: Main criterion for **CART** trees.
+*   **Formula**: $Gini = 1 - \Sigma(p_i^2)$
+
+**Information Gain**
+*   **Concept**: Measures the reduction in entropy (uncertainty) after a split. (Higher is better).
+*   **Usage**: Main criterion for **ID3 and C4.5** algorithms.
+*   **Formula**: $Gain = Entropy(parent) - Weighted Entropy(children)$
+
+## 14. What is Logistic Regression? Explain its use in binary classification.
+
+**Logistic Regression**
+*   **Definition**: A classification algorithm used to predict binary outcomes (0 or 1).
+*   **Mechanism**: Uses a **sigmoid function** to map outputs to a probability between 0 and 1.
+*   **Modeling**: It models the probability of the positive class ($P(Y=1|X)$).
+
+**Use in Binary Classification**
+*   **Thresholding**: Applies a threshold (usually 0.5) to probability to assign class labels.
+*   **Applications**: Spam detection, disease prediction, churn prediction.
+*   **Pros**: Easy to interpret and efficient for linearly separable data.
+
+## 15. Explain how Trend, Seasonality, and Cyclic components can be visually analyzed in time series data.
+
+**Trend**
+*   **Visual**: Observed as a long-term upward or downward movement in line plots.
+*   **Analysis**: Identified using smoothing techniques like moving averages.
+
+**Seasonality**
+*   **Visual**: Regular repeating patterns at fixed intervals (peaks and troughs).
+*   **Analysis**: Visualized using **seasonal subseries plots** or monthly box plots.
+
+**Cyclic Component**
+*   **Visual**: Irregular long-term fluctuations without fixed periods (economic cycles).
+*   **Analysis**: Detected by observing peaks and troughs over multiple years (longer duration than seasonality).
+
+## 16. Discuss the challenges of applying Random Forests and Boosting on temporal data, and propose solutions such as sliding windows and feature engineering.
+
+**Challenges**
+*   **No Time Awareness**: Standard ML models (RF/Boosting) shuffle data, breaking temporal dependency.
+*   **Extrapolation**: They cannot predict trends outside the range of training values.
+*   **Seasonality**: They struggle if seasonality is not explicitly engineered as features.
+*   **Leakage Risk**: Random splitting allows future data to leak into the training set.
+
+**Solutions**
+*   **Sliding Windows**: Convert series into supervised learning format using lags ($t-1, t-2$).
+*   **Feature Engineering**: Add rolling statistics (moving mean/std) and calendar features (month, day of week).
+*   **Validation**: Use **Walk-Forward Validation** designed for time series, not k-fold.
+*   **Hybrid Approach**: Use decomposition to model the residuals with ML after removing trend/seasonality.
+
+## 17. What is a Decision Tree? Mention any two advantages of using it.
+
+**Decision Tree**
+*   **Definition**: A supervised learning algorithm that splits data into branches based on feature conditions, forming a tree-like structure for decision making.
+
+**Advantages**
+1.  **Interpretability**: Easy to understand and visualize; mimics human logic.
+2.  **Versatility**: Handles both numerical and categorical data with minimal preprocessing (no normalization needed).
+
+## 18. Describe the model selection criteria AIC & BIC and their role in ARIMA modeling.
+
+**AIC (Akaike Information Criterion)**
+*   **Metric**: Balances goodness of fit (likelihood) vs. model complexity (number of parameters $k$).
+*   **Goal**: Penalizes excessive parameters to prevent overfitting. Lower AIC is better.
+*   **Formula**: $AIC = 2k - 2\ln(L)$
+
+**BIC (Bayesian Information Criterion)**
+*   **Metric**: Similar to AIC but applies a **stronger penalty** for complexity ($k \ln(n)$).
+*   **Goal**: Prefers simpler models, especially for large datasets. Lower BIC is better.
+*   **Formula**: $BIC = k \ln(n) - 2\ln(L)$
+
+**Role in ARIMA**
+*   Used to select the optimal combination of $(p, d, q)$ parameters by choosing the model with the **lowest AIC/BIC scores**.
