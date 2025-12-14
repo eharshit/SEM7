@@ -271,3 +271,196 @@
 
 **Role in ARIMA**
 *   Used to select the optimal combination of $(p, d, q)$ parameters by choosing the model with the **lowest AIC/BIC scores**.
+
+## 19. Explain with diagrams how additive and multiplicative decomposition differ and how they impact forecasting strategies.
+
+**Additive Decomposition**
+*   **Model**: $Y_t = Trend + Seasonality + Residual$
+*   **Visual Characteristic**: The magnitude of the seasonal fluctuations **remains constant** regardless of the trend level.
+*   **Diagram Idea**:
+    ```
+    ^       /\      /\
+    |      /  \    /  \      (Height of waves stays same)
+    |     /    \  /    \
+    |____/______\/______\
+    ```
+*   **Forecasting Strategy**: Preferred when seasonality is stable. No transformation needed.
+
+**Multiplicative Decomposition**
+*   **Model**: $Y_t = Trend \times Seasonality \times Residual$
+*   **Visual Characteristic**: The magnitude of the seasonal fluctuations **grows or shrinks** as the trend increases or decreases.
+*   **Diagram Idea**:
+    ```
+    ^           / \
+    |          /   \
+    |     /\  /     \      (Waves get bigger as trend goes up)
+    |____/__\/_______\
+    ```
+*   **Forecasting Strategy**: Preferred when seasonality is proportional to series level. Often requires **Log Transformation** to stabilize variance before modeling.
+
+## 20. Write short notes on: a) Noise component in time series b) Differencing
+
+**a) Noise (Residual) Component**
+*   **Definition**: The random, irregular fluctuations in a time series that are left over after trend and seasonality are removed.
+*   **Characteristics**: Unpredictable and contains no patterns. Ideally, it should be "White Noise" (zero mean, constant variance, uncorrelated).
+*   **Role**: Used for model diagnostics—if "noise" still has patterns, the model is incomplete.
+
+**b) Differencing**
+*   **Definition**: A transformation method used to make a non-stationary time series **stationary**.
+*   **Process**: Subtracting the current observation from the previous one ($Y_t' = Y_t - Y_{t-1}$).
+*   **Purpose**: Removes trends and stabilizes the mean of the time series, which is a prerequisite for models like ARIMA.
+
+## 21. Explain in detail the steps of outlier detection and treatment with suitable examples.
+
+**Step 1: Visualization**
+*   **Method**: Plot the time series to visually spot spikes or dips that deviate from the normal pattern.
+*   **Example**: A sudden drop in website traffic to near zero on a normal weekday.
+
+**Step 2: Statistical Detection (Z-Score)**
+*   **Method**: Calculate the Z-score for each point. Points with $|Z| > 3$ are often outliers.
+*   **Limitation**: Assumes normal distribution; susceptible to mean/std being skewed by the outliers themselves.
+
+**Step 3: robust Detection (IQR Method)**
+*   **Method**: Calculate Interquartile Range ($IQR = Q3 - Q1$).
+*   **Rule**: Any point outside $[Q1 - 1.5 \times IQR, Q3 + 1.5 \times IQR]$ is an outlier.
+*   **Example**: In sales data [100, 102, 98, 5000, 101], 5000 is detected as an extreme outlier.
+
+**Treatment Strategies**
+1.  **Removal**: Delete the row (only if abundant data exists).
+2.  **Imputation**: Replace with the mean, median, or a rolling average of neighbors.
+3.  **Capping**: Cap values at a certain percentile (e.g., 99th percentile aka Winsorization).
+
+## 22. Discuss in detail how machine learning models (LR, RF, XGBoost) can be adapted for time series forecasting. Include advantages and limitations.
+
+**Adaptation (Supervised Learning Transformation)**
+*   **Lag Features**: Use past values ($t-1, t-2$) as input features ($X$) to predict $t$.
+*   **Time Features**: Extract components like Month, Day, Hour, Is_Holiday.
+*   **Rolling Window**: Compute rolling mean/std as additional features.
+
+**1. Linear Regression (LR)**
+*   **Pros**: Simple, fast, interpretable, good for strong linear trends.
+*   **Cons**: Cannot capture non-linear complex patterns; assumes independence of errors.
+
+**2. Random Forest (RF)**
+*   **Pros**: Handles non-linearity well; robust to outliers; requires less tuning.
+*   **Cons**: **Cannot extrapolate** (cannot predict values outside training range); large models are slow.
+
+**3. XGBoost (Gradient Boosting)**
+*   **Pros**: State-of-the-art accuracy; handles missing data; regularization prevents overfitting.
+*   **Cons**: Sensitive to hyperparameter settings; needs careful tuning; also struggles with extrapolation without trend removal.
+
+## 23. Define RMSE, MAE, and R² used in regression model evaluation.
+
+**RMSE (Root Mean Squared Error)**
+*   **Formula**: $\sqrt{\frac{1}{n}\Sigma(y_{actual} - y_{pred})^2}$
+*   **Meaning**: Represents the standard deviation of prediction errors.
+*   **Significance**: **Penalizes large errors** heavily (due to squaring). Useful when large mistakes are costly.
+
+**MAE (Mean Absolute Error)**
+*   **Formula**: $\frac{1}{n}\Sigma|y_{actual} - y_{pred}|$
+*   **Meaning**: The average magnitude of errors.
+*   **Significance**: **Robust to outliers**; gives a direct interpretation of "how wrong" the model is on average.
+
+**R² (Coefficient of Determination)**
+*   **Formula**: $1 - \frac{SS_{res}}{SS_{tot}}$
+*   **Meaning**: Proportion of variance in the dependent variable explained by the model.
+*   **Significance**: value of 1.0 is perfect; 0.0 means model is no better than predicting the mean. Note: Can be misleading for non-linear component Time Series.
+
+## 24. Explain the process of identifying parameters (p, d, q) for an ARIMA model.
+
+**1. Identification of 'd' (Integration Order)**
+*   **Goal**: Make the series stationary.
+*   **Method**: Check ACF plot or run ADF test. If non-stationary, difference the series ($d=1$) and re-check. Repeat until stationary.
+
+**2. Identification of 'p' (AR term)**
+*   **Tool**: **Partial Autocorrelation Function (PACF)**.
+*   **Rule**: Look for the lag where PACF cuts off (drops to zero) abruptly. The number of significant lags = $p$.
+
+**3. Identification of 'q' (MA term)**
+*   **Tool**: **Autocorrelation Function (ACF)**.
+*   **Rule**: Look for the lag where ACF cuts off abruptly. The number of significant lags = $q$.
+
+**Automatic Selection**: In practice, grid search (checking multiple combinations) and choosing the one with the **lowest AIC** is often used.
+
+## 25. Compare ARIMA/SARIMA with Machine Learning models in terms of assumptions, nonlinearity handling, interpretability, and compute cost.
+
+| Feature | ARIMA / SARIMA | Machine Learning (RF, XGBoost) |
+| :--- | :--- | :--- |
+| **Assumptions** | Strict (Stationarity, Normality of residuals) | Minimal assumptions; data-driven. |
+| **Non-linearity** | Poor (Models linear relationships mostly) | Excellent (Captures complex, non-linear patterns). |
+| **Interpretability** | **High** (Coefficients have clear statistical meaning) | **Low** (Black-box models; feature importance helps). |
+| **Compute Cost** | Low (Fast for univariate, small data) | High (Computationally expensive for large ensembles). |
+| **Data Needs** | Valid on small datasets. | Requires large amounts of data to generalize. |
+
+## 26. What do you mean by Stationarity in time series? Why is it important?
+
+**Stationarity**
+*   **Definition**: A time series is stationary if its **statistical properties** (Mean, Variance, Autocorrelation) are **constant over time**.
+*   **Visual**: The series looks like "noise" around a horizontal line; no trend, no seasonality, no growing variance.
+
+**Importance**
+*   **Modeling Assumption**: Models like ARIMA **assume** the future will behave like the past roughly. If the mean/variance changes (non-stationary), parameters estimated on past data won't apply to the future.
+*   **Stability**: Ensures reliable and valid statistical inference. Non-stationary data leads to spurious (fake) correlations.
+
+## 27. Write a detailed note on hyperparameter tuning and its importance in ensemble models.
+
+**Hyperparameter Tuning**
+*   **Definition**: The process of optimizing the configuration settings (hyperparameters) of a model that are learned *before* training (e.g., Tree Depth, Learning Rate).
+*   **Methods**:
+    *   **Grid Search**: Exhaustive search over specified values.
+    *   **Random Search**: Randomly sampling parameters (often more efficient).
+    *   **Bayesian Optimization**: Intelligent search using past results.
+
+**Importance in Ensemble Models**
+*   **Complexity Control**: Parameters like `max_depth` (RF) or `gamma` (XGBoost) control overfitting.
+*   **Performance**: Default parameters rarely give optimal results; tuning ‘learning rate’ and ‘n_estimators’ can drastically improve accuracy.
+*   **Balance**: Tuning helps find the sweet spot between Bias (underfitting) and Variance (overfitting).
+
+## 28. Describe the role of the confusion matrix in model evaluation.
+
+*Note: Confusion Matrix is primarily for Classification problems (e.g., "Will stock go UP or DOWN?"), not regression forecasting.*
+
+**Confusion Matrix**
+*   **Definition**: A table that summarizes the performance of a classification model by comparing Predicted vs Actual classes.
+*   **Components**:
+    *   **True Positive (TP)**: Correctly predicted "Yes".
+    *   **True Negative (TN)**: Correctly predicted "No".
+    *   **False Positive (FP)**: Type I Error (False Alarm).
+    *   **False Negative (FN)**: Type II Error (Missed Opportunity).
+
+**Role in Evaluation**
+*   **Deriving Metrics**: It is the foundation for calculating **Accuracy**, **Precision**, **Recall**, and **F1-Score**.
+*   **Error Analysis**: Helps identify *how* the model is confused (e.g., is it predicting everything as negative?).
+*   **Cost Sensitivity**: Crucial when false negatives are more expensive than false positives (e.g., predicting equipment failure).
+
+## 29. Design a detailed model evaluation pipeline combining feature importance analysis, residual diagnostics, and forecast error metrics.
+
+**Phase 1: Performance Metrics (Quantitative)**
+*   **Action**: Calculate predictions on the test set.
+*   **Metrics**: Compute **RMSE** (for large errors), **MAE** (for average error), and **MAPE** (for percentage error).
+*   **Goal**: Get a baseline number for accuracy.
+
+**Phase 2: Residual Diagnostics (Qualitative)**
+*   **Action**: Analyze the residuals ($Actual - Predicted$).
+*   **Checks**:
+    *   **Plot Residuals**: Should look like random noise.
+    *   **ACF Plot of Residuals**: Should be zero (no leftover information).
+    *   **Histogram**: Should be roughly Normally Distributed.
+*   **Goal**: Ensure the model hasn't missed any structural patterns.
+
+**Phase 3: Interpretability Analysis**
+*   **Action**: Use **Feature Importance** (for RF/XGBoost) or **SHAP values**.
+*   **Goal**: Identify *which* variables (lags, seasonality, external regressors) are driving the predictions. This builds trust in the model.
+
+## 30. Write a short note on Long Short-Term Memory (LSTM) networks.
+
+**Long Short-Term Memory (LSTM)**
+*   **Definition**: A specialized type of Recurrent Neural Network (RNN) designed to learn long-term dependencies in sequence data.
+*   **Problem Solved**: Standard RNNs suffer from the "vanishing gradient" problem, making them forget older information. LSTMs solve this.
+*   **Architecture**:
+    *   **Cell State**: The "long-term memory" highway that runs through the network.
+    *   **Gates**:
+        *   **Forget Gate**: Decides what information to throw away.
+        *   **Input Gate**: Decides what new information to store.
+        *   **Output Gate**: Decides what to output based on cell state.
+*   **Use Case**: Highly effective for complex time series with long sequential patterns (e.g., speech recognition, stock price trends).
