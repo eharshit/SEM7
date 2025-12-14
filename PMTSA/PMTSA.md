@@ -277,25 +277,11 @@
 **Additive Decomposition**
 *   **Model**: $Y_t = Trend + Seasonality + Residual$
 *   **Visual Characteristic**: The magnitude of the seasonal fluctuations **remains constant** regardless of the trend level.
-*   **Diagram Idea**:
-    ```
-    ^       /\      /\
-    |      /  \    /  \      (Height of waves stays same)
-    |     /    \  /    \
-    |____/______\/______\
-    ```
-*   **Forecasting Strategy**: Preferred when seasonality is stable. No transformation needed.
+**Diagrams**
+![Additive vs Multiplicative Decomposition](decomposition_comparison.png)
 
-**Multiplicative Decomposition**
-*   **Model**: $Y_t = Trend \times Seasonality \times Residual$
-*   **Visual Characteristic**: The magnitude of the seasonal fluctuations **grows or shrinks** as the trend increases or decreases.
-*   **Diagram Idea**:
-    ```
-    ^           / \
-    |          /   \
-    |     /\  /     \      (Waves get bigger as trend goes up)
-    |____/__\/_______\
-    ```
+*   **Additive (Left)**: The peaks and troughs (seasonality) stay the same size even as the trend goes up.
+*   **Multiplicative (Right)**: The peaks and troughs get wider/taller as the trend increases.
 *   **Forecasting Strategy**: Preferred when seasonality is proportional to series level. Often requires **Log Transformation** to stabilize variance before modeling.
 
 ## 20. Write short notes on: a) Noise component in time series b) Differencing
